@@ -1,17 +1,68 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+
+   var logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    methodOverride = require('method-override'),
+    session = require('express-session'),
+    passport = require('passport'),
+    LocalStrategy = require('passport-local');
+
 var app = express();
+
+var funct = require('./functions.js');
+
+
+//===============PASSPORT===============
+
+//This section will contain our work with Passport
+
+//===============EXPRESS================
+// Configure Express
+app.use(logger('combined'));
+app.use(cookieParser());
+app.use(methodOverride('X-HTTP-Method-Override'));
+app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.set('view engine', 'ejs');
+
+// Session-persisted message middleware
+app.use(function(req, res, next){
+    var err = req.session.error,
+        msg = req.session.notice,
+        success = req.session.success;
+
+    delete req.session.error;
+    delete req.session.success;
+    delete req.session.notice;
+
+    if (err) res.locals.error = err;
+    if (msg) res.locals.notice = msg;
+    if (success) res.locals.success = success;
+
+    next();
+});
 
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.listen((process.env.PORT || 3000));
+console.log("listening on port 3000!")
 
 // Server frontpage
 app.get('/', function (req, res) {
-    res.send('Weather Bot server');
+    res.render('login');
 });
+
+//successful request 
+app.post('/local-reg', passport.authenticate('local-signup', {
+        successRedirect: '/success',
+        failureRedirect: '/signin'
+    })
+);
 
 // Facebook Webhook
 app.get('/webhook', function (req, res) {
@@ -23,6 +74,7 @@ app.get('/webhook', function (req, res) {
 });
 
 app.post('/webhook', function (req, res) {
+    console.log(JSON.stringify(req, undefined, 2));
     var events = req.body.entry[0].messaging;
     for (i = 0; i < events.length; i++) {
         var event = events[i];
