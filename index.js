@@ -72,7 +72,6 @@ app.get('/login/:userId', function (req, res) {
     console.log(req.params);
     res.locals.query = req.params;
     res.render('login');
-    //take in senderid as path param
 });
 
 app.get('/privacypolicy', function(req,res){
@@ -131,6 +130,7 @@ app.get('/webhook', function (req, res) {
     } else {
         res.send('Invalid verify token');
     }
+    
 });
 
 app.post('/webhook', function (req, res) {
