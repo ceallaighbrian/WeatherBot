@@ -1,14 +1,13 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+var apiai = require('apiai');
 
 var logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     methodOverride = require('method-override'),
     bcrypt = require('bcryptjs'),
-    session = require('express-session'),
-    passport = require('passport'),
-    LocalStrategy = require('passport-local');
+    session = require('express-session');
 
 var app = express();
 
@@ -34,8 +33,7 @@ app.use(logger('combined'));
 app.use(cookieParser());
 app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 app.set('view engine', 'ejs');
 
@@ -193,7 +191,6 @@ app.post('/webhook', function (req, res) {
 function determineQuestion(event) {
     // TODO - Integrate with api.ai
 
-    var apiai = require('apiai');
     var apiapp = apiai("348cc61ef2684526b3e04976ee36641b");
     var path = "";
     var time;
