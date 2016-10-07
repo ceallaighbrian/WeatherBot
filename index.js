@@ -75,6 +75,10 @@ app.get('/login/:userId', function (req, res) {
     //take in senderid as path param
 });
 
+app.get('/privacypolicy', function(req,res){
+    res.render('privacypolicy');
+});
+
 app.post('/login', function (req, res) {
    console.log(req.body);
 
