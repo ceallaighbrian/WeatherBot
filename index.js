@@ -4,11 +4,35 @@ var request = require('request');
 var apiai = require('apiai');
 var loginUtils = require('./login-utils');
 var messageUtil = require('./message-utils');
+var methodOverride = require('method-override');
+var session = require('express-session');
 
 var app = express();
 
 
+app.use(methodOverride('X-HTTP-Method-Override'));
+app.use(session({secret: 'supernova', saveUninitialized: true, resave: true}));
+
+
 app.set('view engine', 'ejs');
+
+// Session-persisted message middleware
+app.use(function (req, res, next) {
+    var err = req.session.error,
+        msg = req.session.notice,
+        success = req.session.success;
+
+    delete req.session.error;
+    delete req.session.success;
+    delete req.session.notice;
+
+    if (err) res.locals.error = err;
+    if (msg) res.locals.notice = msg;
+    if (success) res.locals.success = success;
+
+    next();
+});
+
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
