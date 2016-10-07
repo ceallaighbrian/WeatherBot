@@ -101,7 +101,7 @@ app.post('/webhook', function (req, res) {
                 determineQuestion(event);
             }
             else {
-                sendMessage(event.sender.id, {text: "Please log in before you can use the service - http://localhost:3000/login/" + event.sender.id});
+                sendMessage(event.sender.id, {text: "You must log in before you can use the service - https://briansweatherbot.herokuapp.com/login/" + event.sender.id});
             }
         }
     }
